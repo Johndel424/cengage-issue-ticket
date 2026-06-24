@@ -1,0 +1,855 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f1f5f9;
+}
+
+.container{
+    display:flex;
+    min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:260px;
+    background:#0f172a;
+    color:white;
+    padding:25px;
+}
+
+.logo{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.user-info{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:30px;
+    padding:12px;
+    background:#1e293b;
+    border-radius:10px;
+}
+
+.avatar{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#3b82f6;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:bold;
+}
+
+.user-info span{
+    color:#94a3b8;
+    font-size:13px;
+}
+
+nav{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+nav a{
+    color:#cbd5e1;
+    text-decoration:none;
+    padding:12px;
+    border-radius:8px;
+    transition:.3s;
+}
+
+nav a:hover,
+nav a.active{
+    background:#1e293b;
+    color:white;
+}
+
+/* CONTENT */
+
+.content{
+    flex:1;
+}
+
+/* HEADER */
+
+header{
+    background:white;
+    padding:20px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 5px rgba(0,0,0,.05);
+}
+
+header p{
+    color:#64748b;
+}
+
+.add-btn{
+    border:none;
+    background:#2563eb;
+    color:white;
+    padding:12px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.add-btn:hover{
+    background:#1d4ed8;
+}
+
+/* STATS */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    padding:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 2px 5px rgba(0,0,0,.05);
+}
+
+.card h3{
+    color:#2563eb;
+    font-size:28px;
+}
+
+/* BOARD */
+
+.board{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    padding:0 20px 20px;
+}
+
+.column{
+    background:white;
+    border-radius:12px;
+    padding:15px;
+    min-height:500px;
+    box-shadow:0 2px 5px rgba(0,0,0,.05);
+}
+
+.column h2{
+    margin-bottom:20px;
+}
+
+.todo-title{
+    color:#ef4444;
+}
+
+.progress-title{
+    color:#f59e0b;
+}
+
+.done-title{
+    color:#22c55e;
+}
+
+/* TICKET */
+
+.ticket{
+    background:#f8fafc;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:15px;
+    transition:.3s;
+    cursor:pointer;
+}
+
+.ticket:hover{
+    transform:translateY(-3px);
+}
+
+.ticket h3{
+    margin-bottom:10px;
+}
+
+.ticket p{
+    color:#64748b;
+    font-size:14px;
+    margin-bottom:15px;
+}
+
+.high{
+    border-left:5px solid #ef4444;
+}
+
+.medium{
+    border-left:5px solid #f59e0b;
+}
+
+.low{
+    border-left:5px solid #22c55e;
+}
+
+.footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.badge{
+    padding:5px 10px;
+    border-radius:20px;
+    color:white;
+    font-size:12px;
+    font-weight:600;
+}
+
+.red{
+    background:#ef4444;
+}
+
+.orange{
+    background:#f59e0b;
+}
+
+.green{
+    background:#22c55e;
+}
+
+/* MOBILE */
+
+@media(max-width:1024px){
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .board{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .container{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+    }
+
+    header{
+        flex-direction:column;
+        gap:15px;
+        text-align:center;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+}
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.5);
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+
+.modal-content{
+    width:90%;
+    max-width:600px;
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    animation:popup .3s ease;
+}
+
+@keyframes popup{
+    from{
+        opacity:0;
+        transform:translateY(-20px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.close-btn{
+    font-size:30px;
+    cursor:pointer;
+    color:#64748b;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+    width:100%;
+    padding:12px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+}
+
+.radio-group{
+    display:flex;
+    gap:20px;
+}
+
+.submit-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    background:#2563eb;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:600;
+}
+
+.submit-btn:hover{
+    background:#1d4ed8;
+}
+
+#ticketDescription {
+    resize: none; /* Hindi na pwedeng lakihan ng user */
+    height: 100px; /* Maglagay ng fixed height para sakto ang laki */
+}
+
+/* Layout para sa Form gamit ang Grid */
+.grid-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Hahatiin sa dalawang pantay na kolum */
+    gap: 15px; /* Patlang o espasyo sa pagitan ng mga fields */
+}
+
+/* Para sa mga fields na kailangang maging buo (tulad ng Description at Button) */
+.grid-form .full-width {
+    grid-column: span 2;
+}
+
+/* Siguraduhing malinis tignan ang mga inputs */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input, 
+.form-group textarea, 
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.details-wrapper{
+    padding:20px;
+}
+
+/* CARD ONLY STYLE (NO FULL PAGE LOOK) */
+.details-card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* HEADER INSIDE CARD */
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.back-btn{
+    text-decoration:none;
+    color:#2563eb;
+    font-weight:600;
+    font-size:14px;
+}
+
+/* ROW DESIGN CLEAN */
+.row{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid #f1f5f9;
+}
+
+.row strong{
+    color:#334155;
+}
+
+.row span{
+    color:#0f172a;
+}
+
+/* LONG TEXT */
+.long-text{
+    flex-direction:column;
+    gap:6px;
+}
+
+/* STATUS COLORS */
+.high{
+    color:#ef4444;
+    font-weight:600;
+}
+
+.progress{
+    color:#f59e0b;
+    font-weight:600;
+}
+
+/* ACTION BUTTON */
+.actions{
+    margin-top:20px;
+    display:flex;
+    justify-content:flex-end;
+}
+
+.resolve-btn{
+    background:#22c55e;
+    color:white;
+    border:none;
+    padding:12px 18px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.resolve-btn:hover{
+    background:#16a34a;
+}
+.ticket {
+    cursor: pointer;
+}
+/* Pop-up Overlay Style */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Medyo madilim na background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Siguradong nasa ibabaw ng lahat */
+}
+
+/* Ang mismong kahon sa gitna */
+.loading-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Umiikot na Spinner */
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db; /* Kulay ng spinner */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 120px;
+    text-align: center;
+    color: #8a8a8a;
+    font-size: 14px;
+    font-style: italic;
+    border: 2px dashed #d9d9d9;
+    border-radius: 10px;
+    margin: 10px;
+    background: #fafafa;
+}
+
+.empty-state p {
+    margin: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Styling para sa Logout Modal (Naka-tago default) */
+#logoutModal {
+    display: none; /* Lalabas lang 'flex' kapag pinindot ang logout */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Itim na transparent sa likod */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+#logoutModal, h2, p{
+    color: #000;
+}
+/* Mas maliit na box para sa logout confirmation */
+.modal-sm {
+    max-width: 350px;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Mga Buttons */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-danger:hover { background-color: #bd2130; }
+.btn-secondary:hover { background-color: #5a6268; }
+
+
+
+
+
+
+
+
+
+
+
+#todoContainer, 
+#progressContainer, 
+#doneContainer {
+    max-height: 70vh;        /* Nililimitahan ang taas base sa 70% ng screen. Pwedeng palitan ng fixed pixel tulad ng 500px */
+    overflow-y: auto;        /* Kusa itong mag-ii-scroll kapag lumampas ang mga tickets sa max-height */
+    padding-right: 5px;      /* Kaunting patlang sa kanan para hindi dumikit ang ticket sa mismong scrollbar */
+}
+
+/* (Opsyon) Para gawing mas makinis at maganda ang itsura ng scrollbar sa bawat cell */
+#todoContainer::-webkit-scrollbar,
+#progressContainer::-webkit-scrollbar,
+#doneContainer::-webkit-scrollbar {
+    width: 6px;              /* Lapad ng scrollbar */
+}
+
+#todoContainer::-webkit-scrollbar-track,
+#progressContainer::-webkit-scrollbar-track,
+#doneContainer::-webkit-scrollbar-track {
+    background: #f1f1f1;     /* Kulay ng track o background ng scrollbar */
+    border-radius: 10px;
+}
+
+#todoContainer::-webkit-scrollbar-thumb,
+#progressContainer::-webkit-scrollbar-thumb,
+#doneContainer::-webkit-scrollbar-thumb {
+    background: #c1c1c1;     /* Kulay ng mismong hinihilang scrollbar */
+    border-radius: 10px;
+}
+
+#todoContainer::-webkit-scrollbar-thumb:hover,
+#progressContainer::-webkit-scrollbar-thumb:hover,
+#doneContainer::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;     /* Kulay kapag tinatapatan ng mouse */
+}
+/* Ang mismong Card - Mas manipis at may micro-shadows */
+.ticket {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Maliit na agwat lang */
+}
+
+/* Hover effect na malinis (hindi umaalog) */
+.ticket:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+    transform: translateY(-1px);
+}
+
+/* Header layout */
+.ticket-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.ticket-id {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.ticket-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Puputulin ang text pag masyadong mahaba */
+}
+
+/* Grid para sa mga detalye sa gitna */
+.ticket-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
+    font-size: 0.75rem;
+    color: #64748b;
+    border-top: 1px dashed #f1f5f9;
+    border-bottom: 1px dashed #f1f5f9;
+    padding: 6px 0;
+}
+
+.meta-item {
+    display: flex;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.meta-item.full-row {
+    grid-column: span 2;
+}
+
+.meta-label {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.meta-value {
+    color: #475569;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Footer & Badge */
+.ticket-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+}
+
+/* Minimalist Color accents sa kaliwang gilid base sa status class (opsyonal) */
+.ticket.high { border-left: 3px solid #ef4444; }
+.ticket.medium { border-left: 3px solid #f97316; }
+.ticket.low { border-left: 3px solid #22c55e; }
+.ticket-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.2;
+    flex: 1;
+
+    /* Madyik para sa pagputol ng text sa isang linya */
+    white-space: nowrap;        /* Bawal bumaba sa susunod na linya ang text */
+    overflow: hidden;           /* Itatago ang sumobrang letra */
+    text-overflow: ellipsis;    /* Kusang gagawing '...' ang dulo ng sumobrang text */
+}
+/* Binagong Grid structure para sa itaas na bahagi */
+.ticket-meta-grid {
+    display: grid;
+    grid-template-columns: auto 1fr; /* Ang ID ay sakto lang, ang Date box ang kakain ng natitirang espasyo */
+    gap: 4px 8px;
+    font-size: 0.72rem;
+    color: #64748b;
+}
+
+/* Id-box styling (unang kolum, unang linya) */
+.id-box {
+    grid-column: 1;
+}
+
+/* 🔥 Date box styling (sumisipa pakanan papuntang dulo) */
+.date-box {
+    grid-column: 2;
+    justify-content: flex-end; /* Isasagad sa dulong kanan */
+    text-align: right;
+}
+
+.date-text {
+    color: #94a3b8;
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+/* Para sa By: at To: na nasa ikalawang linya */
+.text-left {
+    justify-content: flex-start;
+}
+.notification-badge {
+    background-color: #ef4444; /* Kulay Red */
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px; /* Ginagawang bilog o oval depende sa haba ng numero */
+    line-height: 1;
+    min-width: 10px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+#detDescription {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #334155;
+    line-height: 1.5;
+    
+    /* 🔥 ETO ANG SIKRETO PARA HINDI MAG-OVERLAP AT BUMABA ANG TEXT */
+    white-space: pre-wrap;       /* Pinapanatili ang enter/line breaks ng user */
+    word-break: break-all;       /* Pinupuwersang putulin ang salita kahit walang space (tulad ng "OKTTTT...") */
+    overflow-wrap: break-word;   /* Sinisiguradong hindi lalagpas sa container ang text */
+}
+/* Kulay Orange/Yellow para sa Update */
+.btn-update {
+    background-color: #f59e0b;
+    color: white;
+}
+.btn-update:hover {
+    background-color: #d97706;
+}
+
+/* Kulay Pula para sa Delete */
+.btn-delete {
+    background-color: #ef4444;
+    color: white;
+}
+.btn-delete:hover {
+    background-color: #dc2626;
+}
+
+/* Ayos ng container para pantay ang mga buttons */
+#creatorActions {
+    display: flex;
+}

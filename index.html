@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketFlow - Login</title>
+    <link rel="stylesheet" href="index/login.css">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="login-card">
+
+        <div class="logo">
+            <div class="logo-icon">🎫</div>
+            <h1>Cengage Ticket</h1>
+            <p>Track • Manage • Resolve</p>
+        </div>
+
+        <form>
+
+    <div class="input-group">
+        <label for="loginEmail">Email Address</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+    </div>
+
+    <div class="input-group">
+        <label for="loginPassword">Password</label>
+        <div class="password-wrapper">
+            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+            <button type="button" id="toggleLoginPassword" class="text-toggle-btn">SHOW</button>
+        </div>
+    </div>
+
+    <div class="options">
+        <label></label>
+        <a href="forgotPassword/forgot-password.html">
+            Forgot Password?
+        </a>
+    </div>
+
+    <button type="submit" class="btn-login">
+        Login
+    </button>
+
+</form>
+
+        <div class="signup-link">
+            Don't have an account?
+            <a href="register/register.html">Create Account</a>
+        </div>
+
+    </div>
+
+</div>
+<script type="module" src="index/login.js"></script>
+</body>
+</html>

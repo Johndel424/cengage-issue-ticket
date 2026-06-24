@@ -1,0 +1,201 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#2563eb,#1e40af);
+    padding:20px;
+}
+
+.register-card{
+    background:white;
+    width:100%;
+    max-width:450px;
+    padding: 20px 40px;
+    border-radius:20px;
+    box-shadow:0 15px 40px rgba(0,0,0,.15);
+}
+
+.logo{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.logo-icon{
+    width:70px;
+    height:70px;
+    margin:auto;
+    border-radius:15px;
+    background:#2563eb;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:32px;
+    margin-bottom:15px;
+}
+
+.logo h1{
+    color:#0f172a;
+}
+
+.logo p{
+    color:#64748b;
+}
+
+h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:#0f172a;
+}
+
+.input-group{
+    margin-bottom:18px;
+}
+
+.input-group label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+    color:#334155;
+}
+
+.input-group input{
+    width:100%;
+    padding:13px;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    outline:none;
+    transition:.3s;
+}
+
+.input-group input:focus{
+    border-color:#2563eb;
+}
+
+.btn-register{
+    width:100%;
+    padding:8px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:600;
+}
+
+.btn-register:hover{
+    background:#1d4ed8;
+}
+
+.login-link{
+    margin-top:10px;
+    text-align:center;
+    color:#64748b;
+}
+
+.login-link a{
+    text-decoration:none;
+    color:#2563eb;
+    font-weight:600;
+}
+
+@media(max-width:480px){
+
+    .register-card{
+        padding:25px;
+    }
+
+}
+.show-pass {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-color);
+}
+
+/* Wrapper para sa input at button */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+
+
+/* Gamitin ang parehong CSS kanina, palitan lang ang style ng button */
+.text-toggle-btn {
+    position: absolute;
+    right: 14px;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #666; /* Kulay gray */
+    transition: color 0.2s ease;
+}
+
+.text-toggle-btn:hover {
+    color: #0066cc; /* Mag-blue kapag tinapatan ng mouse */
+}
+/* Balot para sa mga fields na gustong pagtabihin */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Hahatiin sa dalawang pantay na column */
+    gap: 15px; /* Espasyo sa pagitan ng dalawang input */
+}
+
+/* Pagandahin ang itsura ng Dropdown Select para professional tingnan */
+.input-group select {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.input-group select:focus {
+    border-color: #0066cc; /* Same brand color ng focus sa password niyo */
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+}
+
+/* Responsive: Kapag maliit ang screen (Mobile), babalik sa single column */
+@media (max-width: 600px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0; /* Babalik sa normal na spacing ng input-group */
+    }
+}
