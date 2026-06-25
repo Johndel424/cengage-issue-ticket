@@ -100,7 +100,7 @@ const detCreatedAt = document.getElementById("detCreatedAt");
 const detCreatedBy = document.getElementById("detCreatedBy");
 const detAssignedTo = document.getElementById("detAssignedTo");
 const detDescription = document.getElementById("detDescription");
-
+const detResolvedAt = document.getElementById("detResolvedAt");
 // Mga Buttons
 const btnPickTicket = document.getElementById("btnPickTicket");
 const btnResolveTicket = document.getElementById("btnResolveTicket");
@@ -130,116 +130,7 @@ if (ticketId) {
     alert("No Ticket ID found!");
     window.location.href = "main.html";
 }
-// let ticketCreatorUid = "";
-// async function loadTicketDetails(id) {
-//     try {
-//         const ticketRef = ref(db, "tickets/" + id);
-//         const snapshot = await get(ticketRef);
 
-//         if (snapshot.exists()) {
-//             const ticket = snapshot.val();
-
-//             // I-display ang data sa HTML
-//             detTicketId.textContent = `#${ticket.ticketId}`;
-//             detTitle.textContent = ticket.title;
-//             detStatus.textContent = ticket.status;
-//             detPriority.textContent = ticket.priority;
-//             detCategory.textContent = ticket.category;
-            
-//             // Format ng Date (Ipinapakita ang petsa lamang)
-//             detCreatedAt.textContent = ticket.createdAt ? ticket.createdAt.split(' ')[0] : "-";
-//             detDescription.textContent = ticket.description;
-
-//             // Display para sa user objects
-//             const createdByName = ticket.createdByname || (ticket.createdBy ? ticket.createdBy.name : "Unknown");
-//             detCreatedBy.textContent = createdByName;
-            
-//             // Checking para sa assigned staff
-//             const assignedName = ticket.assignedToname;
-//             detAssignedTo.textContent = assignedName;
-            
-//             detCreatedBy.setAttribute("data-uid", ticket.createdByname ? ticket.createdByname.uid : "");
-//             detAssignedTo.setAttribute("data-uid", ticket.assignedToname ? ticket.assignedToname.uid : "");
-//             ticketCreatorUid = ticket.createdByuid;
-//             // 🔥 LOGIKA PARA SA KONTROL NG BUTTONS BASE SA STATUS
-//             if (ticket.status === "Done") {
-//                 // Kung tapos na ang ticket, bawal nang galawin
-//                 btnPickTicket.disabled = true;
-//                 btnResolveTicket.disabled = true;
-//                 btnResolveTicket.innerHTML = "✅ Resolved";
-//             } else if (ticket.status === "In Progress") {
-//                 // Kung may gumagawa na, i-disable si Pick, iwanang bukas si Resolve
-//                 btnPickTicket.disabled = true;
-//                 btnPickTicket.innerHTML = "🏃 In Progress";
-//             }
-
-//         } else {
-//             alert("Ticket does not exist.");
-//             window.location.href = "main.html";
-//         }
-//     } catch (error) {
-//         console.error("Error loading ticket:", error);
-//     }
-// }
-
-// // 🔥 1. EVENT FOR "PICK TICKET" (I-a-assign sa sarili at gagawing In Progress)
-// btnPickTicket.addEventListener("click", async () => {
-//     if (!ticketId || !currentUserInfo.uid) return;
-
-//     // 🔥 DAGDAG: Kumpirmasyon muna bago i-pick up
-//     const kumpirmasyon = confirm("Are you sure you want to pick up and handle this ticket?");
-//     if (!kumpirmasyon) return; // Kapag pinindot ang 'Cancel', hihinto ang code dito at walang mangyayari
-
-//     const ticketRef = ref(db, "tickets/" + ticketId);
-//     const updateData = {
-//         status: "In Progress",
-//         assignedTouid: currentUserInfo.uid,
-//         assignedToname: currentUserInfo.name
-//     };
-
-//     try {
-//         await update(ticketRef, updateData);
-//         alert("You have successfully picked up this ticket!");
-//         loadTicketDetails(ticketId); // I-reload ang UI upang makita ang bagong data
-//     } catch (error) {
-//         console.error("Error picking ticket:", error);
-//         alert("Failed to pick ticket.");
-//     }
-// });
-
-// // 🔥 2. EVENT FOR "RESOLVE TICKET"
-// btnResolveTicket.addEventListener("click", async () => {
-//     if (!ticketId) return;
-
-//     // DIREKTANG PAGKUMPARA: UID ng naka-login kumpara sa UID na galing sa database
-//     if (currentUserInfo.uid !== ticketCreatorUid) {
-//         alert("🔒 Access Denied: Only the creator of this ticket can mark it as Resolved.");
-//         return; 
-//     }
-
-//     const kumpirmasyon = confirm("Are you sure you want to mark this ticket as Resolved/Done?");
-//     if (!kumpirmasyon) return;
-
-//     // 🔥 GANYAN NALANG - Malinis at tumpak na Manila Time Zone string
-//     const resolutionDate = new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" });
-
-//     const ticketRef = ref(db, "tickets/" + ticketId);
-    
-//     // Isama ang resolvedAt sa database update
-//     const updateData = { 
-//         status: "Done",
-//         resolvedAt: resolutionDate 
-//     };
-
-//     try {
-//         await update(ticketRef, updateData);
-//         alert("Ticket has been marked as Resolved!");
-//         loadTicketDetails(ticketId); // I-reload ang UI
-//     } catch (error) {
-//         console.error("Error resolving ticket:", error);
-//         alert("Failed to resolve ticket.");
-//     }
-// });
 let ticketCreatorUid = "";
 const creatorActions = document.getElementById("creatorActions");
 const btnDeleteTicket = document.getElementById("btnDeleteTicket");
@@ -260,7 +151,7 @@ async function loadTicketDetails(id) {
             detCategory.textContent = ticket.category;
             
             // Format Date (Displays date portion only)
-            detCreatedAt.textContent = ticket.createdAt ? ticket.createdAt.split(' ')[0] : "-";
+            detCreatedAt.textContent = ticket.createdAt;
             detDescription.textContent = ticket.description;
 
             // Handle displaying user object names safely
@@ -269,7 +160,10 @@ async function loadTicketDetails(id) {
             
             const assignedName = ticket.assignedToname || "Unassigned";
             detAssignedTo.textContent = assignedName;
-            
+            // 🌟 PAG-CHECK KUNG RESOLVED NA: Kung walang resolved date, "Not yet" ang lalabas
+            if (detResolvedAt) {
+                detResolvedAt.textContent = ticket.resolvedAt ? ticket.resolvedAt : "Not yet";
+            }
             detCreatedBy.setAttribute("data-uid", ticket.createdByname ? ticket.createdByname.uid : "");
             detAssignedTo.setAttribute("data-uid", ticket.assignedToname ? ticket.assignedToname.uid : "");
             
