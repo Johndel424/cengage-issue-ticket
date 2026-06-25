@@ -445,7 +445,7 @@ confirmLogoutBtn.addEventListener('click', function() {
         .then(() => {
             // Success! Ang Firebase na ang bahalang mag-clear ng session.
             alert("Logged out successfully!");
-            window.location.href = "login.html"; // I-redirect sa login page mo
+            window.location.href = "../index.html"; // I-redirect sa login page mo
         })
         .catch((error) => {
             // Kung may error man (halos madalang naman)
