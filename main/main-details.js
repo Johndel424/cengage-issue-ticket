@@ -246,7 +246,7 @@ btnPickTicket.addEventListener("click", async () => {
         currentUserInfo.workRole !== "data-analyst"
     ) {
         alert(
-            `🔒 Access Denied\nCurrent Role: ${currentUserInfo.workRole}`
+            `🔒 Access Denied\nCurrent Role: ${currentUserInfo.workRole}. Only Engineer or Analyst can pick this ticket`
         );
         return;
     }
