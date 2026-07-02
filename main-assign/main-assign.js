@@ -447,3 +447,52 @@ onAuthStateChanged(auth, (user) => {
         location.href = "../index.html"; // Opsyonal: I-uncomment kung gusto mo silang ibalik sa login screen
     }
 });
+
+const contentSets = document.getElementById("contentSets");
+
+if (contentSets) {
+  contentSets.addEventListener("click", function (e) {
+    e.preventDefault(); // Pinipigilan ang '#' na mag-trigger sa URL
+    window.location.href = "../contentSets/contentSet.html";
+  });
+}
+//////////////////////////////////
+// LOGOUT FUNCTION
+// Kuhanin ang mga HTML elements
+const logoutLink = document.getElementById('logoutLink');
+const logoutModal = document.getElementById('logoutModal');
+const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+
+// 1. Pag-click sa Logout link -> Lalabas ang Modal
+logoutLink.addEventListener('click', function(event) {
+    event.preventDefault(); // Pigilan ang pagtalon ng page
+    logoutModal.style.display = 'flex'; // Ipakita ang modal
+});
+
+// 2. Pag-click sa Cancel button -> Tatago ang Modal
+cancelLogoutBtn.addEventListener('click', function() {
+    logoutModal.style.display = 'none';
+});
+
+// 3. Pag-click sa Labas ng modal (overlay) -> Tatago rin ang Modal
+window.addEventListener('click', function(event) {
+    if (event.target === logoutModal) {
+        logoutModal.style.display = 'none';
+    }
+});
+
+// 4. Pag-click sa Yes, Logout -> Dito na gagana si Firebase
+confirmLogoutBtn.addEventListener('click', function() {
+    signOut(auth)
+        .then(() => {
+            // Success! Ang Firebase na ang bahalang mag-clear ng session.
+            alert("Logged out successfully!");
+            window.location.href = "../index.html"; // I-redirect sa login page mo
+        })
+        .catch((error) => {
+            // Kung may error man (halos madalang naman)
+            console.error("Error signing out: ", error);
+            alert("Something went wrong. Please try again.");
+        });
+});
