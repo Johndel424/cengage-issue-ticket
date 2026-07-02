@@ -8,221 +8,292 @@ const userAvatar = document.getElementById("userAvatar");
 const userFullName = document.getElementById("userFullName");
 const userRole = document.getElementById("userRole");
 
-// Pakatitigan kung may naka-login na user
+// DOM Elements
+const ticketForm = document.getElementById("ticketForm");
+const contentSetSelect = document.getElementById("ticketContentSet");
+const assignToSelect = document.getElementById("assignTo");
+// Siguraduhing nakuha mo itong mga bagong elements sa itaas ng JS file mo:
+const csEngineerGroup = document.getElementById("csEngineerGroup");
+const csAnalystGroup = document.getElementById("csAnalystGroup");
+const csEngineerDisplay = document.getElementById("csEngineerDisplay");
+const csAnalystDisplay = document.getElementById("csAnalystDisplay");
+// Global Data Holders
+let currentUserData = null;
+let globalUsersData = {};
+let globalContentSetsData = {};
+
+// 1. WATCH USER AUTHENTICATION & INITIALIZE DATA
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    try {
-      // 1. Kunin ang data ng user mula sa Realtime DB gamit ang UID
-      const userRef = ref(db, "users/" + user.uid);
-      const snapshot = await get(userRef);
+    if (user) {
+        try {
+            const userRef = ref(db, "users/" + user.uid);
+            const snapshot = await get(userRef);
 
-      if (snapshot.exists()) {
-        const userData = snapshot.val();
-        
-        const fullName = userData.fullName || "User";
-        const rawRole = userData.workRole || "No Role";
+            if (snapshot.exists()) {
+                currentUserData = snapshot.val();
+                
+                const fullName = currentUserData.fullName || "User";
+                const rawRole = currentUserData.workRole || "No Role";
 
-        // 2. I-format ang Work Role para mas magandang tingnan (e.g., "data-analyst" -> "Data Analyst")
-        const formattedRole = rawRole
-          .split("-")
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
+                const formattedRole = rawRole
+                    .split("-")
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ");
 
-        // 3. Kunin ang INITIAL (Unang titik ng Full Name, gawing Capital Letter)
-        const initial = fullName.charAt(0).toUpperCase();
+                const initial = fullName.charAt(0).toUpperCase();
 
-        // 4. I-display na sa HTML UI natin!
-        userAvatar.textContent = initial;
-        userFullName.textContent = fullName;
-        userRole.textContent = formattedRole;
+                if (typeof userAvatar !== 'undefined') userAvatar.textContent = initial;
+                if (typeof userFullName !== 'undefined') userFullName.textContent = fullName;
+                if (typeof userRole !== 'undefined') userRole.textContent = formattedRole;
 
-        const ticketsRef = ref(db, "tickets");
-        onValue(ticketsRef, (ticketsSnapshot) => {
-          let myAssignedCount = 0;
+                await loadInitialData();
+                listenToActiveTickets(user.uid);
+            } else {
+                console.log("No data available in database for this user.");
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    } else {
+        window.location.href = "../index.html"; 
+    }
+});
 
-          if (ticketsSnapshot.exists()) {
+// 2. REAL-TIME TICKET BADGE COUNTER
+function listenToActiveTickets(userUid) {
+    const ticketsRef = ref(db, "tickets");
+    onValue(ticketsRef, (ticketsSnapshot) => {
+        let myAssignedCount = 0;
+
+        if (ticketsSnapshot.exists()) {
             const ticketsData = ticketsSnapshot.val();
             const ticketList = Object.values(ticketsData);
 
-            // ticketList.forEach((ticket) => {
-            //   const isAssignedToMe = ticket.assignedTouid === user.uid;
-            //   const isTaskActive = ticket.status === "ToDo" || ticket.status === "In Progress";
-
-            //   if (isAssignedToMe && isTaskActive) {
-            //     myAssignedCount++;
-            //   }
-            // });
             ticketList.forEach((ticket) => {
-              // --- BINAGO DITO ---
-              const isAssignedToMe = ticket.assignedTouid === user.uid;
-              const isCreatedByMe = ticket.createdByuid === user.uid; // Tinitignan kung ikaw ang gumawa
-              const isNotDone = ticket.status !== "Done"; // Tinitignan kung hindi pa Done ang status
+                const isAssignedToMe = ticket.assignedTouid === userUid;
+                const isCreatedByMe = ticket.createdByuid === userUid; 
+                const isNotDone = ticket.status !== "Done"; 
 
-              // Bilangin kung (Assigned sa'yo O Created mo) AT ang status ay hindi Done
-              if ((isAssignedToMe || isCreatedByMe) && isNotDone) {
-                myAssignedCount++;
-              }
-              // --------------------
+                if ((isAssignedToMe || isCreatedByMe) && isNotDone) {
+                    myAssignedCount++;
+                }
             });
-          }
+        }
 
-          if (assignedBadge) {
+        if (typeof assignedBadge !== 'undefined' && assignedBadge) {
             if (myAssignedCount > 0) {
-              assignedBadge.textContent = myAssignedCount;
-              assignedBadge.style.display = "inline-block";
+                assignedBadge.textContent = myAssignedCount;
+                assignedBadge.style.display = "inline-block";
             } else {
-              assignedBadge.style.display = "none";
+                assignedBadge.style.display = "none";
             }
-          }
-        });
-      } else {
-        console.log("No data available in database for this user.");
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  } else {
-    window.location.href = "../index.html"; 
-  }
-});
+        }
+    });
+}
 
-
-const ticketForm = document.getElementById("ticketForm");
-const assignToSelect = document.getElementById("assignTo");
-
-let currentUserData = null; // Dito natin itatago pansamantala ang info ng naka-login
-
-// 1. TINGNAN KUNG SINO ANG NAKA-LOGIN AT I-LOAD ANG MGA ASSIGNEES
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
+// 3. FETCH USERS & CONTENT SETS FROM FIREBASE
+async function loadInitialData() {
     try {
-      // Kunin ang info ng kasalukuyang user para sa Ticket Creation mamaya
-      const currentUserSnapshot = await get(ref(db, "users/" + user.uid));
-      if (currentUserSnapshot.exists()) {
-        currentUserData = currentUserSnapshot.val();
-      }
+        const usersSnapshot = await get(ref(db, "users"));
+        globalUsersData = usersSnapshot.exists() ? usersSnapshot.val() : {};
 
-      // I-load ang mga pwedeng pag-assignan ng ticket
-      await loadQualifiedStaff();
+        const contentSetsSnapshot = await get(ref(db, "contentSets"));
+        globalContentSetsData = contentSetsSnapshot.exists() ? contentSetsSnapshot.val() : {};
+
+        if (contentSetSelect) {
+            contentSetSelect.innerHTML = '<option value="none" selected>Not a content set</option>';
+            Object.keys(globalContentSetsData).forEach(key => {
+                contentSetSelect.innerHTML += `<option value="${key}">${globalContentSetsData[key].title}</option>`;
+            });
+        }
+
+        loadAllQualifiedStaff();
 
     } catch (error) {
-      console.error("Error initializing dashboard:", error);
+        console.error("Error loading initial dropdown data:", error);
     }
-  } else {
-    window.location.href = "../index.html"; // Ibalik sa login kung walang user
-  }
-});
+}
 
-// Function para gumawa ng Professional Ticket Number (Halimbawa: TKT-X7R-8392)
+// 4. LOAD ALL QUALIFIED STAFF (KAPAG 'NONE' ANG CONTENT SET)
+function loadAllQualifiedStaff() {
+    if (!assignToSelect) return;
+    
+    assignToSelect.innerHTML = `
+        <option value="" disabled selected>Select User</option>
+        <option value="unassigned">Anyone (Open for Pickup)</option>
+    `;
+
+    Object.keys(globalUsersData).forEach((userId) => {
+        const user = globalUsersData[userId];
+        const role = user.workRole;
+
+        if (role === "spinner-engineer" || role === "software-engineer" || role === "data-analyst") {
+            const option = document.createElement("option");
+            option.value = userId; 
+            option.textContent = `${user.fullName} (${role === "data-analyst" ? "Data Analyst" : "Engineer"})`;
+            assignToSelect.appendChild(option);
+        }
+    });
+}
+
+// 5. DYNAMIC SELECTION LOGIC & INFORMATIONAL DISPLAY
+if (contentSetSelect) {
+
+    contentSetSelect.addEventListener("change", (e) => {
+    const selectedContentId = e.target.value;
+
+    // 1. KAPAG "NONE" ANG PINILI SA CONTENT SET
+    if (selectedContentId === "none") {
+        // Itago ang mga fields at i-clear ang laman
+        csEngineerGroup.style.display = "none";
+        csAnalystGroup.style.display = "none";
+        csEngineerDisplay.value = "";
+        csAnalystDisplay.value = "";
+
+        loadAllQualifiedStaff(); // Balik sa buong listahan
+        return;
+    }
+
+    // 2. KAPAG MAY PILING CONTENT SET
+    const contentSet = globalContentSetsData[selectedContentId];
+    
+    let assignedEngineerUid = "unassigned";
+    let assignedAnalystUid = "unassigned";
+
+    Object.keys(globalUsersData).forEach(uid => {
+        if (globalUsersData[uid].fullName === contentSet.engineerName) assignedEngineerUid = uid;
+        if (globalUsersData[uid].fullName === contentSet.dataAnalystName) assignedAnalystUid = uid;
+    });
+
+    // ISHOW SA MAAYOS NA STYLE GAMIT ANG MGA BAGONG INPUT FIELDS
+    csEngineerGroup.style.display = "flex";
+    csAnalystGroup.style.display = "flex";
+    
+    csEngineerDisplay.value = contentSet.engineerName || "None assigned";
+    csAnalystDisplay.value = contentSet.dataAnalystName || "None assigned";
+
+    // I-filter ang Assign To choices (Silang dalawa lang + Open for Pickup)
+    assignToSelect.innerHTML = `
+        <option value="" disabled selected>Select from Content Set Staff</option>
+    `;
+
+    if (contentSet.engineerName && assignedEngineerUid !== "unassigned") {
+        const opt = document.createElement("option");
+        opt.value = assignedEngineerUid;
+        opt.textContent = `${contentSet.engineerName}`;
+        assignToSelect.appendChild(opt);
+    }
+
+    if (contentSet.dataAnalystName && assignedAnalystUid !== "unassigned") {
+        const opt = document.createElement("option");
+        opt.value = assignedAnalystUid;
+        opt.textContent = `${contentSet.dataAnalystName}`;
+        assignToSelect.appendChild(opt);
+    }
+});
+}
+
+// 6. HELPER FUNCTION: TICKET ID GENERATOR
 function generateTicketNumber() {
     const lettersAndNumbers = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     const numbers = "0123456789";
     
     let middlePart = "";
-    // Gumawa ng 3 random alphanumeric characters
     for (let i = 0; i < 3; i++) {
         middlePart += lettersAndNumbers.charAt(Math.floor(Math.random() * lettersAndNumbers.length));
     }
     
     let lastPart = "";
-    // Gumawa ng 4 random numbers para sa dulo
     for (let i = 0; i < 4; i++) {
         lastPart += numbers.charAt(Math.floor(Math.random() * numbers.length));
     }
     
     return `TKT-${middlePart}-${lastPart}`;
 }
-async function loadQualifiedStaff() {
-  try {
-    const usersSnapshot = await get(ref(db, "users"));
-    
-    // 🔥 BAGUHIN ITO: I-reset ang dropdown pero panatilihin ang "Select User" at "Anyone"
-    assignToSelect.innerHTML = `
-      <option value="" disabled selected>Select User</option>
-      <option value="unassigned">Anyone (Open for Pickup)</option>
-    `;
 
-    if (usersSnapshot.exists()) {
-      const usersData = usersSnapshot.val();
-      
-      Object.keys(usersData).forEach((userId) => {
-        const user = usersData[userId];
-        const role = user.workRole;
+// 7. FORM SUBMISSION EVENT LISTENER (UPDATED WITH AUTOMATIC CONTENT SET STAFF IN DATABASE)
+if (ticketForm) {
+    ticketForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-        if (role === "spinner-engineer" || role === "software-engineer" || role === "data-analyst") {
-          const option = document.createElement("option");
-          option.value = userId; 
-          option.textContent = `${user.fullName} (${role === "data-analyst" ? "Data Analyst" : "Engineer"})`;
-          assignToSelect.appendChild(option);
+        if (!currentUserData) {
+            alert("User session not loaded completely. Please try again.");
+            return;
         }
-      });
-    }
-  } catch (error) {
-    console.error("Error loading staff list:", error);
-    assignToSelect.innerHTML = '<option value="">Failed to load users</option>';
-  }
-}
-ticketForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
 
-  if (!currentUserData) {
-    alert("User session not loaded completely. Please try again.");
-    return;
-  }
+        const submitBtn = document.querySelector(".submit-btn");
+        
+        const title = document.getElementById("ticketTitle").value.trim();
+        const description = document.getElementById("ticketDescription").value.trim();
+        const priority = document.getElementById("ticketPriority").value;
+        const selectedContentSetId = contentSetSelect ? contentSetSelect.value : "none";
+        
+        const assignedToId = assignToSelect.value;
+        const assignedToName = assignToSelect.options[assignToSelect.selectedIndex].text;
 
-  const submitBtn = document.querySelector(".submit-btn");
-  
-  // Kunin ang mga inputs
-  const title = document.getElementById("ticketTitle").value.trim();
-  const description = document.getElementById("ticketDescription").value.trim();
-  const priority = document.getElementById("ticketPriority").value;
-  const category = document.getElementById("ticketCategory").value;
-  const assignedToId = assignToSelect.value;
-  const assignedToName = assignToSelect.options[assignToSelect.selectedIndex].text;
+        // Kuhanin ang detalye ng Content Set para sa DB insertion
+        let contentSetTitle = "None";
+        let contentSetEngineer = "None";
+        let contentSetAnalyst = "None";
+        let contentSetEngineerId = "None";
+        let contentSetAnalystId = "None";
 
-  // Status Logic
-  const ticketStatus = (assignedToId === "unassigned") ? "ToDo" : "In Progress";
+        if (selectedContentSetId !== "none" && globalContentSetsData[selectedContentSetId]) {
+            const currentCS = globalContentSetsData[selectedContentSetId];
+            contentSetTitle = currentCS.title;
+            contentSetEngineer = currentCS.engineerName ;
+            contentSetAnalyst = currentCS.dataAnalystName;
+            contentSetAnalystId = currentCS.dataAnalystId;
+            contentSetEngineerId = currentCS.engineerId; 
+        }
 
-  // 🔥 1. GENERATE PROFESSIONAL TICKET NUMBER
-  const ticketNumber = generateTicketNumber(); 
+        const ticketStatus = (assignedToId === "unassigned") ? "ToDo" : "In Progress";
+        const ticketNumber = generateTicketNumber(); 
 
-  try {
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Creating ticket...";
+        try {
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Creating ticket...";
 
-    // 🔥 2. I-SET ANG PATH SA DATABASE GAMIT ANG TICKET NUMBER BILANG PINAKA-ID
-    const customTicketRef = ref(db, "tickets/" + ticketNumber);
+            const customTicketRef = ref(db, "tickets/" + ticketNumber);
+            const creationDate = new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" });
 
-    const creationDate = new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" });
+            // 🔥 IPAPASOK NA SA DATABASE LAHAT NG KAILANGAN MO DITO:
+            await set(customTicketRef, {
+                ticketId: ticketNumber, 
+                title: title,
+                description: description,
+                priority: priority,
+                // Content Set Metadata na hiniling mo
+                contentSetTitle: contentSetTitle,
+                contentSetEngineer: contentSetEngineer, 
+                contentSetAnalyst: contentSetAnalyst,   
+                contentSetEngineerId: contentSetEngineerId,
+                contentSetAnalystId: contentSetAnalystId,
+                // Assigned Staff Info
+                assignedTouid: assignedToId,
+                assignedToname: assignedToName,
+                
+                // Creator Info
+                createdByuid: auth.currentUser.uid,
+                createdByname: currentUserData.fullName,
+                createdAt: creationDate,
+                status: ticketStatus
+            });
 
-    // 3. I-save ang data
-    await set(customTicketRef, {
-      ticketId: ticketNumber, // 🔥 Ito na ang pinaka ID mo ngayon (e.g., TKT-A3B-8492)
-      title: title,
-      description: description,
-      priority: priority,
-      category: category,
-    assignedTouid: assignedToId,
-    assignedToname: assignedToName,
-    createdByuid: currentUserData.uid,
-    createdByname: currentUserData.fullName,
-      createdAt: creationDate,
-      status: ticketStatus
+            alert(`Ticket [${ticketNumber}] created successfully with status: ${ticketStatus}`);
+            
+            ticketForm.reset(); 
+            loadAllQualifiedStaff();
+
+        } catch (error) {
+            console.error("Error creating ticket:", error);
+            alert("Failed to create ticket: " + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Create Ticket";
+        }
     });
-
-    // Mas magandang alert para makita agad ang bagong Ticket Number
-    alert(`Ticket [${ticketNumber}] created successfully with status: ${ticketStatus}`);
-    ticketForm.reset(); 
-
-  } catch (error) {
-    console.error("Error creating ticket:", error);
-    alert("Failed to create ticket: " + error.message);
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.innerText = "Create Ticket";
-  }
-});
-
+}
 
 /////////////////////////////////////////////
 // SHOWING DATA IN LIST
@@ -282,12 +353,9 @@ onValue(ticketsRef, (snapshot) => {
     let weightA = priorityWeight[a.priority] || 1;
     let weightB = priorityWeight[b.priority] || 1;
 
-    // 1. Unahin ang mas mataas ang Priority (Critical -> High -> Medium -> Low)
     if (weightB !== weightA) {
         return weightB - weightA; 
     } else {
-        // 🔥 2. KUNG PAREHAS NG PRIORITY: Mas lumang petsa/oras ang mauuna sa itaas (Chronological)
-        // Ginagamit ang 'a' kumpara sa 'b' para ang mas maagang oras (e.g., 3pm) ang mauna kesa sa (4pm)
         const dateA = a.createdAt ? String(a.createdAt) : "";
         const dateB = b.createdAt ? String(b.createdAt) : "";
         
@@ -336,31 +404,31 @@ onValue(ticketsRef, (snapshot) => {
             }
 
             const ticketHTML = `
-        <div class="ticket ${ticketClass}" onclick="location.href='main-details.html?id=${ticket.ticketId}'">
-            <div class="ticket-meta-grid">
-                <div class="meta-item">
-                    <span class="ticket-id">#${ticket.ticketId}</span>
-                </div>
-                <div class="meta-item text-right">
-                    <span class="meta-label">Created at:</span>
-                    <span class="meta-value date-text">${formattedDate}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">By:</span>
-                    <span class="meta-value">${shortName}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">To:</span>
-                    <span class="meta-value">${ticket.assignedToname || 'Unassigned'}</span>
-                </div>
-            </div>
+                <div class="ticket ${ticketClass}" onclick="location.href='main-details.html?id=${ticket.ticketId}'">
+                    <div class="ticket-meta-grid">
+                        <div class="meta-item">
+                            <span class="ticket-id">#${ticket.ticketId}</span>
+                        </div>
+                        <div class="meta-item text-right">
+                            <span class="meta-label">Created at:</span>
+                            <span class="meta-value date-text">${formattedDate}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">By:</span>
+                            <span class="meta-value">${shortName}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">To:</span>
+                            <span class="meta-value">${ticket.assignedToname || 'Unassigned'}</span>
+                        </div>
+                    </div>
 
-            <div class="ticket-footer">
-                <h3 class="ticket-title" title="${originalTitle}">${shortTitle}</h3>
-                <span class="badge ${badgeColor}">${badgeText}</span>
-            </div>
-        </div>
-    `;
+                    <div class="ticket-footer">
+                        <h3 class="ticket-title" title="${originalTitle}">${shortTitle}</h3>
+                        <span class="badge ${badgeColor}">${badgeText}</span>
+                    </div>
+                </div>
+            `;
 
             // I-sort sa tamang column at magdagdag sa kaukulang counter
             if (ticket.status === "ToDo") {
@@ -466,5 +534,14 @@ if (assignedToMeLink) {
   assignedToMeLink.addEventListener("click", function (e) {
     e.preventDefault(); // Pinipigilan ang '#' na mag-trigger sa URL
     window.location.href = "../main-assign/main-assign.html";
+  });
+}
+
+const contentSets = document.getElementById("contentSets");
+
+if (contentSets) {
+  contentSets.addEventListener("click", function (e) {
+    e.preventDefault(); // Pinipigilan ang '#' na mag-trigger sa URL
+    window.location.href = "../contentSets/contentSet.html";
   });
 }

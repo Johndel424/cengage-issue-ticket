@@ -348,7 +348,7 @@ header p{
 
 #ticketDescription {
     resize: none; /* Hindi na pwedeng lakihan ng user */
-    height: 100px; /* Maglagay ng fixed height para sakto ang laki */
+    height: 80px; /* Maglagay ng fixed height para sakto ang laki */
 }
 
 /* Layout para sa Form gamit ang Grid */
@@ -852,4 +852,11 @@ header p{
 /* Ayos ng container para pantay ang mga buttons */
 #creatorActions {
     display: flex;
+}
+/* Dagdag sa css para sa malinis na dynamic fields */
+.grid-form input[readonly] {
+    background-color: #f8fafc !important; /* Bahagyang light gray para alam na automatic */
+    border-style: dashed !important; /* Dashed lines para minimalist accent */
+    color: #64748b;
+    cursor: not-allowed;
 }

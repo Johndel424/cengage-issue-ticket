@@ -31,6 +31,9 @@
                 👤 Assigned To Me
                 <span id="assignedBadge" class="notification-badge" style="display: none;">0</span>
             </a>
+            <a href="#" id="contentSets" style="position: relative; display: inline-flex; align-items: center; gap: 5px;">
+                👤 Content Sets
+            </a>
             <a href="#" id="logoutLink">🚪 Logout</a>
 
             <div class="modal" id="logoutModal">
@@ -148,23 +151,26 @@
             </div>
 
             <div class="form-group">
-                <label for="ticketCategory">Category</label>
-                <select id="ticketCategory" required>
-                    <option value="Bug">Bug</option>
-                    <option value="Technical Support">Technical Support</option>
-                    <option value="Feature Request">Feature Request</option>
-                    <option value="System Issue">System Issue</option>
+                <label for="ticketContentSet">Content Set</label>
+                <select id="ticketContentSet">
+                    <option value="none" selected>Not a content set</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="assignTo">Assign To</label>
                 <select id="assignTo" required>
-                    <option value="" disabled selected>Loading staff...</option>
-                    <option value="unassigned">Anyone (Open for Pickup)</option>
+                    <option value="" disabled selected>Select User</option>
                 </select>
             </div>
+            <div class="form-group cs-staff-row" id="csEngineerGroup" style="display: none;">
+                <label>Linked Engineer</label>
+                <input type="text" id="csEngineerDisplay" readonly>
+            </div>
 
+            <div class="form-group cs-staff-row" id="csAnalystGroup" style="display: none;">
+                <label>Linked Data Analyst</label>
+                <input type="text" id="csAnalystDisplay" readonly>
+            </div>
             <button type="submit" class="submit-btn full-width">
                 Create Ticket
             </button>
