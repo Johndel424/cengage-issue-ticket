@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Issue Ticketing System</title>
+<link rel="stylesheet" href="../main/main.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2 style="color: white;">🎫 Cengage </h2>
+        </div>
+
+        <div class="user-info">
+            <div class="avatar" id="userAvatar">-</div> 
+            <div>
+                <h4 style="font-size: 13px;" id="userFullName">Loading...</h4>
+                <span id="userRole">User</span>
+            </div>
+        </div>
+
+        <nav>
+            <a href="#" id="allTickets">📋 All Tickets</a>
+            <a href="#" id="assignedToMeLink" style="position: relative; display: inline-flex; align-items: center; gap: 5px;">
+                👤 Assigned To Me
+                <span id="assignedBadge" class="notification-badge" style="display: none;">0</span>
+            </a>
+            <a href="#" class="active" id="contentSets" style="position: relative; display: inline-flex; align-items: center; gap: 5px;">
+                👤 Content Sets
+            </a>
+            <a href="#" id="logoutLink">🚪 Logout</a>
+
+            <div class="modal" id="logoutModal">
+                <div class="modal-content modal-sm">
+                    <div class="modal-header">
+                        <h2>Confirm Logout</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to logout?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="confirmLogoutBtn" class="btn-danger">Yes, Logout</button>
+                        <button id="cancelLogoutBtn" class="btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="content">
+        <!-- HEADER -->
+        <header>
+            <div>
+                <h1>Issue Ticketing System</h1>
+                <p>Manage and track issues efficiently</p>
+            </div>
+
+            <button id="openModal" class="add-btn">
+                + Create Content Set
+            </button>
+
+        </header>
+
+    <main class="board">
+    </main>
+    </div>
+
+</div>
+
+<div class="modal" id="ticketModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Create Content Set</h2>
+            <span class="close-btn" id="closeModal">&times;</span>
+        </div>
+
+        <form id="contentSetForm" class="grid-form">
+
+    <div class="form-group full-width">
+        <label for="contentTitle">Content Set Title</label>
+        <input
+            type="text"
+            id="contentTitle"
+            placeholder="Enter Content Set Title"
+            required
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="engineerSelect">Engineer</label>
+        <select id="engineerSelect" required>
+            <option value="">Loading Engineers...</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="analystSelect">Data Analyst</label>
+        <select id="analystSelect" required>
+            <option value="">Loading Data Analysts...</option>
+        </select>
+    </div>
+
+    <button type="submit" class="submit-btn full-width">
+        Save Content Set
+    </button>
+
+</form>
+    </div>
+
+</div>
+<!-- <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-box">
+        <div class="spinner"></div>
+        <p>Loading Tickets...</p>
+    </div>
+</div> -->
+</body>
+<script>
+
+const modal = document.getElementById("ticketModal");
+const openBtn = document.getElementById("openModal");
+const closeBtn = document.getElementById("closeModal");
+
+openBtn.onclick = () => {
+    modal.style.display = "flex";
+};
+
+closeBtn.onclick = () => {
+    modal.style.display = "none";
+};
+
+window.onclick = (e) => {
+    if(e.target === modal){
+        modal.style.display = "none";
+    }
+};
+
+</script>
+<style>
+/* Container ng Board - Minimalist Version */
+.board {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Medyo binawasan ang min-width */
+    gap: 10px; /* Binawasan ang gap */
+    padding: 10px; /* Binawasan ang padding */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; /* Mas generic at modernong font stack */
+    background-color: #f9fafb; /* Nagdagdag ng napakagaan na background sa board */
+}
+
+/* Disenyo ng bawat Card - Minimalist Version */
+.content-item-card {
+    background: #ffffff;
+    border-radius: 6px; /* Binawasan ang border-radius */
+    box-shadow: none; /* Tinanggal ang shadow sa normal na estado */
+    padding: 18px; /* Binawasan ang padding */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #e0e0e0; /* Pinagaan ang kulay ng border */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+  
+.content-item-card:hover {
+    transform: translateY(-2px); /* Mas subtle na pagtaas */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Mas pinagaan ang shadow sa hover */
+}
+  
+/* Title ng Card - Minimalist Version */
+.content-item-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px; /* Inayos ang margin */
+    color: #333333; /* Mas neutral na dark grey */
+    font-size: .80rem; /* Medyo binawasan ang font size */
+    font-weight: 600;
+    border-bottom: none; /* Tinanggal ang border-bottom */
+    padding-bottom: 0; /* Tinanggal ang padding-bottom */
+}
+  
+/* FormGroup para sa pagkakaayos ng label at select */
+.form-group {
+    margin-bottom: 12px; /* Medyo binawasan ang margin */
+}
+
+.content-item-card label {
+    display: block;
+    font-size: 0.5rem; /* Medyo binawasan ang font size */
+    font-weight: 500; /* Pinagaan ang font weight */
+    color: #666666; /* Mas neutral na grey */
+    margin-bottom: 5px; /* Medyo binawasan ang margin */
+    text-transform: uppercase;
+    letter-spacing: normal; /* Tinanggal ang letter-spacing */
+}
+  
+/* Estilo ng Dropdown Select - Minimalist Version */
+.content-item-card select {
+    width: 100%;
+    padding: 9px 10px; /* Medyo binawasan ang padding */
+    border-radius: 6px; /* Binawasan ang border-radius */
+    border: 1px solid #cccccc; /* Pinagaan ang kulay ng border */
+    background-color: #ffffff; /* Purong puti na background */
+    color: #333333; /* Mas neutral na dark grey */
+    font-size: 0.9rem; /* Medyo binawasan ang font size */
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+  
+.content-item-card select:focus {
+    border-color: #007bff; /* Standard blue focus color */
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2); /* Mas pinagaan na focus shadow */
+    background-color: #ffffff; /* Siguraduhing puti pa rin sa focus */
+}
+</style>
+<script type="module" src="contentSet.js"></script>
+</html>
